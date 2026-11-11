@@ -1,0 +1,223 @@
+{% extends "layout.html" %}
+
+{% block title %}Data Karyawan - SI Absensi{% endblock %}
+
+{% block heading %}Data Karyawan{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+
+        <div>
+            <h5>Data Karyawan</h5>
+            <p>Kelola data karyawan yang terdaftar</p>
+        </div>
+
+        <a href="{{ url_for('tambah_karyawan') }}"
+           class="btn btn-primary">
+
+            <i class="bi bi-plus-lg"></i>
+            Tambah Karyawan
+
+        </a>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+                <tr>
+
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>NIK</th>
+                    <th>Jabatan</th>
+                    <th>No. HP</th>
+                    <th>Alamat</th>
+                    <th>Wajah</th>
+                    <th>Aksi</th>
+
+                </tr>
+
+            </thead>
+
+
+            <tbody>
+
+                {% if data %}
+
+                    {% for karyawan in data %}
+
+                    <tr>
+
+                        <td>
+                            {{ loop.index }}
+                        </td>
+
+
+                        <td>
+
+                            <strong>
+                                {{ karyawan.nama }}
+                            </strong>
+
+                        </td>
+
+
+                        <td>
+                            {{ karyawan.nik }}
+                        </td>
+
+
+                        <td>
+                            {{ karyawan.jabatan or '-' }}
+                        </td>
+
+
+                        <td>
+                            {{ karyawan.no_hp or '-' }}
+                        </td>
+
+
+                        <td>
+                            {{ karyawan.alamat or '-' }}
+                        </td>
+
+
+                        <!-- STATUS WAJAH -->
+
+                        <td>
+
+                            {% if karyawan.wajah_terdaftar %}
+
+                                <span class="badge bg-success">
+
+                                    <i class="bi bi-check-circle"></i>
+
+                                    Terdaftar
+
+                                </span>
+
+                            {% else %}
+
+                                <span class="badge bg-secondary">
+
+                                    <i class="bi bi-person-x"></i>
+
+                                    Belum Terdaftar
+
+                                </span>
+
+                            {% endif %}
+
+                        </td>
+
+
+                        <!-- AKSI -->
+
+                        <td>
+
+                            <!-- DAFTAR / DAFTAR ULANG WAJAH -->
+
+                            {% if karyawan.user_id %}
+
+                                <a
+                                    href="{{ url_for('daftar_wajah', karyawan_id=karyawan.id) }}"
+                                    class="btn btn-info btn-sm"
+                                    title="Daftar Wajah"
+                                >
+
+                                    <i class="bi bi-camera"></i>
+
+                                </a>
+
+                            {% else %}
+
+                                <button
+                                    type="button"
+                                    class="btn btn-secondary btn-sm"
+                                    disabled
+                                    title="Karyawan belum memiliki akun login"
+                                >
+
+                                    <i class="bi bi-camera"></i>
+
+                                </button>
+
+                            {% endif %}
+
+
+                            <!-- EDIT -->
+
+                            <a
+                                href="{{ url_for('edit_karyawan', id=karyawan.id) }}"
+                                class="btn btn-warning btn-sm"
+                                title="Edit"
+                            >
+
+                                <i class="bi bi-pencil-square"></i>
+
+                            </a>
+
+
+                            <!-- HAPUS -->
+
+                            <form
+                                action="{{ url_for('hapus_karyawan', id=karyawan.id) }}"
+                                method="POST"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="btn btn-danger btn-sm"
+                                    title="Hapus"
+                                    onclick="return confirm('Yakin ingin menghapus data karyawan ini?');"
+                                >
+
+                                    <i class="bi bi-trash"></i>
+
+                                </button>
+
+                            </form>
+
+                        </td>
+
+                    </tr>
+
+                    {% endfor %}
+
+                {% else %}
+
+                    <tr>
+
+                        <td
+                            colspan="8"
+                            class="text-center py-4"
+                        >
+
+                            <i class="bi bi-people fs-2 d-block mb-2"></i>
+
+                            Belum ada data karyawan.
+
+                        </td>
+
+                    </tr>
+
+                {% endif %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

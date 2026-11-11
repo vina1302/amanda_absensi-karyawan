@@ -1,0 +1,553 @@
+{% extends "layout.html" %}
+
+{% block title %}Absensi{% endblock %}
+
+{% block heading %}Absensi Karyawan{% endblock %}
+
+{% block content %}
+
+<div class="attendance-card">
+
+    <div class="attendance-icon">
+        <i class="bi bi-person-bounding-box"></i>
+    </div>
+
+    <h3>Absensi Hari Ini</h3>
+
+    <p>
+        Silakan arahkan wajah Anda ke kamera
+        untuk melakukan absensi.
+    </p>
+
+    <!-- INFORMASI ABSENSI -->
+    <div class="attendance-info">
+
+        <div>
+            <small>Jam Masuk</small>
+
+            <strong>
+                {{ data.jam_masuk if data and data.jam_masuk else '-' }}
+            </strong>
+        </div>
+
+        <div>
+            <small>Jam Pulang</small>
+
+            <strong>
+                {{ data.jam_keluar if data and data.jam_keluar else '-' }}
+            </strong>
+        </div>
+
+        <div>
+            <small>Status</small>
+
+            <strong>
+                {{ data.status if data and data.status else '-' }}
+            </strong>
+        </div>
+
+    </div>
+
+    {% if not data or not data.jam_keluar %}
+
+    <!-- KAMERA -->
+    <div class="camera-container">
+
+        <video
+            id="camera"
+            autoplay
+            playsinline
+            muted>
+        </video>
+
+        <canvas
+            id="canvas"
+            style="display:none;">
+        </canvas>
+
+    </div>
+
+    <div id="camera-status" class="camera-status">
+
+        <i class="bi bi-camera"></i>
+        Mengaktifkan kamera...
+
+    </div>
+
+    <!-- FORM ABSENSI -->
+    <form
+        method="POST"
+        id="attendance-form">
+
+        <input
+            type="hidden"
+            name="aksi"
+            id="aksi"
+            value="">
+
+        <input
+            type="hidden"
+            name="foto"
+            id="foto">
+
+        {% if not data or not data.jam_masuk %}
+
+        <button
+            type="button"
+            class="attendance-btn masuk"
+            id="btn-masuk"
+            disabled>
+
+            <i class="bi bi-box-arrow-in-right"></i>
+            Absen Masuk
+
+        </button>
+
+        {% endif %}
+
+        {% if data and data.jam_masuk and not data.jam_keluar %}
+
+        <button
+            type="button"
+            class="attendance-btn pulang"
+            id="btn-pulang"
+            disabled>
+
+            <i class="bi bi-box-arrow-right"></i>
+            Absen Pulang
+
+        </button>
+
+        {% endif %}
+
+    </form>
+
+    {% else %}
+
+    <!-- ABSENSI SELESAI -->
+    <div class="attendance-complete">
+
+        <i class="bi bi-check-circle-fill"></i>
+
+        Absensi hari ini sudah lengkap.
+        Terima kasih!
+
+    </div>
+
+    {% endif %}
+
+</div>
+
+
+<!-- FORM PENGAJUAN IZIN -->
+<div class="attendance-card izin-card">
+
+    <h3>
+        <i class="bi bi-file-earmark-text"></i>
+        Pengajuan Izin / Tidak Hadir
+    </h3>
+
+    <p class="izin-description">
+        Silakan isi formulir berikut jika tidak dapat hadir bekerja.
+    </p>
+
+    <form action="{{ url_for('ajukan_izin') }}"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <div class="form-group">
+            <label>Jenis Izin</label>
+            <select name="jenis_izin" class="form-control" required>
+                <option value="">-- Pilih Jenis Izin --</option>
+                <option value="Izin">Izin</option>
+                <option value="Sakit">Sakit</option>
+                <option value="Keperluan Lainnya">Keperluan Lainnya</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label>Tanggal Mulai</label>
+            <input type="date"
+                   name="tanggal_mulai"
+                   class="form-control"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Tanggal Selesai</label>
+            <input type="date"
+                   name="tanggal_selesai"
+                   class="form-control"
+                   required>
+        </div>
+
+        <div class="form-group">
+            <label>Alasan Izin</label>
+            <textarea name="alasan"
+                      class="form-control"
+                      rows="3"
+                      placeholder="Masukkan alasan izin..."
+                      required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>Upload Bukti Izin</label>
+            <input type="file"
+                   name="file_bukti"
+                   class="form-control"
+                   accept=".jpg,.jpeg,.png,.pdf"
+                   required>
+
+            <small>Format JPG, JPEG, PNG, atau PDF. Maksimal 8 MB.</small>
+        </div>
+
+        <button type="submit" class="btn-izin">
+            <i class="bi bi-send"></i>
+            Kirim Pengajuan Izin
+        </button>
+
+    </form>
+</div>
+
+
+<!-- RIWAYAT PENGAJUAN IZIN -->
+<div class="attendance-card riwayat-izin-card">
+
+    <h3>
+        <i class="bi bi-clock-history"></i>
+        Riwayat Pengajuan Izin
+    </h3>
+
+    {% if pengajuan_izin %}
+
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover">
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Jenis Izin</th>
+                    <th>Tanggal Mulai</th>
+                    <th>Tanggal Selesai</th>
+                    <th>Alasan</th>
+                    <th>Bukti</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for izin in pengajuan_izin %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ izin.jenis_izin }}</td>
+                    <td>{{ izin.tanggal_mulai }}</td>
+                    <td>{{ izin.tanggal_selesai }}</td>
+                    <td>{{ izin.alasan }}</td>
+
+                    <td>
+                        <a href="{{ url_for('static', filename='uploads/izin/' ~ izin.file_bukti) }}"
+                           target="_blank">
+                            Lihat Bukti
+                        </a>
+                    </td>
+
+                    <td>
+                        {% if izin.status == 'Menunggu' %}
+                            <span class="badge bg-warning text-dark">
+                                Menunggu
+                            </span>
+                        {% elif izin.status == 'Disetujui' %}
+                            <span class="badge bg-success">
+                                Disetujui
+                            </span>
+                        {% elif izin.status == 'Ditolak' %}
+                            <span class="badge bg-danger">
+                                Ditolak
+                            </span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+
+        </table>
+    </div>
+
+    {% else %}
+
+    <p class="text-muted text-center">
+        Belum ada riwayat pengajuan izin.
+    </p>
+
+    {% endif %}
+
+</div>
+
+
+{% if not data or not data.jam_keluar %}
+
+<style>
+
+.camera-container {
+    width: 100%;
+    max-width: 500px;
+    margin: 20px auto 10px;
+    border-radius: 15px;
+    overflow: hidden;
+    background: #111;
+}
+
+.camera-container video {
+    width: 100%;
+    display: block;
+    transform: scaleX(-1);
+}
+
+.camera-status {
+    text-align: center;
+    font-size: 14px;
+    margin: 10px 0 15px;
+    color: #555;
+}
+
+#attendance-form {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#attendance-form button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.attendance-info {
+    display: flex;
+    justify-content: center;
+    gap: 28px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.attendance-info > div {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    text-align: center;
+}
+
+.attendance-complete {
+    margin: 22px 0;
+    padding: 14px;
+    border-radius: 10px;
+    background: #e8f7ee;
+    color: #187943;
+}
+
+
+.izin-card,
+.riwayat-izin-card {
+    margin-top: 25px;
+    padding: 25px;
+}
+
+.izin-card h3,
+.riwayat-izin-card h3 {
+    font-size: 20px;
+    font-weight: 600;
+    margin-bottom: 15px;
+}
+
+.izin-description {
+    color: #777;
+    margin-bottom: 20px;
+}
+
+.izin-card .form-group {
+    margin-bottom: 16px;
+}
+
+.izin-card label {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 7px;
+}
+
+.izin-card .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+}
+
+.btn-izin {
+    background: #0c6ad4;
+    color: white;
+    border: none;
+    padding: 11px 20px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.btn-izin:hover {
+    background: #0955ad;
+}
+
+
+</style>
+
+
+<script>
+
+const video = document.getElementById("camera");
+const canvas = document.getElementById("canvas");
+
+const fotoInput = document.getElementById("foto");
+const form = document.getElementById("attendance-form");
+
+const aksiInput = document.getElementById("aksi");
+const statusCamera = document.getElementById("camera-status");
+
+const buttons = [
+    document.getElementById("btn-masuk"),
+    document.getElementById("btn-pulang")
+].filter(Boolean);
+
+let stream = null;
+
+
+// MENGAKTIFKAN KAMERA
+async function startCamera() {
+
+    try {
+
+        stream = await navigator.mediaDevices.getUserMedia({
+
+            video: {
+                facingMode: "user",
+                width: {
+                    ideal: 640
+                },
+                height: {
+                    ideal: 480
+                }
+            },
+
+            audio: false
+
+        });
+
+        video.srcObject = stream;
+
+        statusCamera.innerHTML = `
+            <i class="bi bi-check-circle-fill"></i>
+            Kamera siap digunakan
+        `;
+
+        buttons.forEach(button => {
+            button.disabled = false;
+        });
+
+    } catch (error) {
+
+        console.error(error);
+
+        statusCamera.innerHTML = `
+            <i class="bi bi-exclamation-triangle-fill"></i>
+            Kamera tidak dapat digunakan
+        `;
+
+        alert(
+            "Kamera tidak dapat diakses. Izinkan akses kamera pada browser."
+        );
+
+    }
+
+}
+
+
+// PROSES ABSENSI
+buttons.forEach(button => {
+
+    button.addEventListener("click", () => {
+
+        if (!video.videoWidth || !video.videoHeight) {
+
+            alert(
+                "Kamera belum siap. Silakan tunggu sebentar."
+            );
+
+            return;
+
+        }
+
+        // Tentukan jenis absensi
+        aksiInput.value =
+            button.id === "btn-masuk"
+            ? "masuk"
+            : "pulang";
+
+
+        // Ambil foto dari kamera
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        const context = canvas.getContext("2d");
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        fotoInput.value = canvas.toDataURL(
+            "image/jpeg",
+            0.85
+        );
+
+
+        // Nonaktifkan tombol selama proses
+        buttons.forEach(item => {
+            item.disabled = true;
+        });
+
+        button.innerHTML = `
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Memeriksa wajah...
+        `;
+
+
+        // Kirim data ke Flask
+        form.submit();
+
+    });
+
+});
+
+
+// Jalankan kamera
+startCamera();
+
+
+// Matikan kamera saat halaman ditutup
+window.addEventListener("beforeunload", () => {
+
+    if (stream) {
+
+        stream.getTracks().forEach(track => {
+            track.stop();
+        });
+
+    }
+
+});
+
+</script>
+
+{% endif %}
+
+{% endblock %}

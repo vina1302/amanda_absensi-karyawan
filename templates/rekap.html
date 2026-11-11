@@ -1,0 +1,138 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Rekap Kehadiran
+{% endblock %}
+
+{% block heading %}
+Rekap Kehadiran
+{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+
+        <div>
+            <h5>
+                Rekap Kehadiran
+            </h5>
+
+            <p>
+                Data absensi karyawan
+            </p>
+        </div>
+
+        <i class="bi bi-table"></i>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+
+            <tr>
+
+                {% if session["role"] == "admin" %}
+
+                <th>Nama</th>
+                <th>Jabatan</th>
+
+                {% endif %}
+
+                <th>Tanggal</th>
+                <th>Jam Masuk</th>
+                <th>Status</th>
+                <th>Keterangan</th>
+
+            </tr>
+
+            </thead>
+
+
+            <tbody>
+
+            {% for item in data %}
+
+            <tr>
+
+                {% if session["role"] == "admin" %}
+
+                <td>
+                    {{ item.nama }}
+                </td>
+
+                <td>
+                    {{ item.jabatan }}
+                </td>
+
+                {% endif %}
+
+
+                <td>
+                    {{ item.tanggal }}
+                </td>
+
+                <td>
+                    {{ item.jam_masuk or '-' }}
+                </td>
+
+                <td>
+
+                    {% if item.status == "Hadir" %}
+
+                    <span class="badge bg-success">
+                        Hadir
+                    </span>
+
+                    {% elif item.status == "Terlambat" %}
+
+                    <span class="badge bg-warning">
+                        Terlambat
+                    </span>
+
+                    {% else %}
+
+                    <span class="badge bg-secondary">
+                        {{ item.status }}
+                    </span>
+
+                    {% endif %}
+
+                </td>
+
+                <td>
+                    {{ item.keterangan or '-' }}
+                </td>
+
+            </tr>
+
+            {% else %}
+
+            <tr>
+
+                <td
+                    colspan="{% if session['role'] == 'admin' %}6{% else %}4{% endif %}"
+                    class="text-center py-5">
+
+                    Belum ada data absensi.
+
+                </td>
+
+            </tr>
+
+            {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

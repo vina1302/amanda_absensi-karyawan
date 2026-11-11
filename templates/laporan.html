@@ -1,0 +1,152 @@
+```html
+{% extends "layout.html" %}
+
+{% block title %}
+Laporan Bulanan
+{% endblock %}
+
+{% block heading %}
+Laporan Bulanan
+{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+
+        <div>
+            <h5>Laporan Kehadiran Karyawan</h5>
+            <p>Rekapitulasi data kehadiran karyawan berdasarkan tanggal</p>
+        </div>
+
+        <button
+            onclick="window.print()"
+            class="btn btn-success no-print">
+
+            <i class="bi bi-printer"></i>
+            Cetak
+
+        </button>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table table-bordered table-hover align-middle">
+
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Nama</th>
+                    <th>Jabatan</th>
+                    <th>Tanggal Absensi</th>
+                    <th>Jam Masuk</th>
+                    <th>Jam Pulang</th>
+                    <th>Status</th>
+                    <th class="no-print">Aksi</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for item in data %}
+
+                <tr>
+
+                    <td>{{ loop.index }}</td>
+
+                    <td>{{ item.nama }}</td>
+
+                    <td>{{ item.jabatan or '-' }}</td>
+
+                    <td>
+                        {{ item.tanggal.strftime('%d-%m-%Y') if item.tanggal else '-' }}
+                    </td>
+
+                    <td>
+                        {{ item.jam_masuk or '-' }}
+                    </td>
+
+                    <td>
+                        {{ item.jam_keluar or '-' }}
+                    </td>
+
+                    <td>
+                        {% if item.status == 'Hadir' %}
+                            <span class="badge bg-success">Hadir</span>
+                        {% elif item.status == 'Terlambat' %}
+                            <span class="badge bg-warning text-dark">Terlambat</span>
+                        {% elif item.status == 'Izin' %}
+                            <span class="badge bg-info text-dark">Izin</span>
+                        {% elif item.status == 'Sakit' %}
+                            <span class="badge bg-primary">Sakit</span>
+                        {% elif item.status == 'Alpha' %}
+                            <span class="badge bg-danger">Alpha</span>
+                        {% else %}
+                            <span class="badge bg-secondary">
+                                {{ item.status or '-' }}
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td class="no-print">
+
+                        <form
+                            method="POST"
+                            action="{{ url_for('hapus_laporan', id=item.id) }}"
+                            onsubmit="return confirm('Apakah kamu yakin ingin menghapus data absensi {{ item.nama }} tanggal {{ item.tanggal }}?')">
+
+                            <button
+                                type="submit"
+                                class="btn btn-danger btn-sm">
+
+                                <i class="bi bi-trash"></i>
+                                Hapus
+
+                            </button>
+
+                        </form>
+
+                    </td>
+
+                </tr>
+
+                {% else %}
+
+                <tr>
+                    <td colspan="8" class="text-center">
+                        Belum ada data absensi.
+                    </td>
+                </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+<style>
+@media print {
+
+    .no-print {
+        display: none !important;
+    }
+
+    .card-box {
+        box-shadow: none !important;
+    }
+
+    body {
+        background: white !important;
+    }
+
+}
+</style>
+
+{% endblock %}
+```

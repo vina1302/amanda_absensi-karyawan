@@ -1,0 +1,167 @@
+
+{% extends "layout.html" %}
+
+{% block title %}Persetujuan Izin{% endblock %}
+
+{% block heading %}Persetujuan Izin Karyawan{% endblock %}
+
+{% block content %}
+
+<div class="container-fluid">
+
+    <div class="card border-0 shadow-sm">
+        <div class="card-body">
+
+            <h5 class="mb-3">
+                <i class="bi bi-clipboard-check"></i>
+                Daftar Pengajuan Izin
+            </h5>
+
+            <div class="table-responsive">
+
+                <table class="table table-bordered table-hover align-middle">
+
+                    <thead class="table-primary">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Karyawan</th>
+                            <th>Jenis Izin</th>
+                            <th>Tanggal Mulai</th>
+                            <th>Tanggal Selesai</th>
+                            <th>Alasan</th>
+                            <th>Bukti</th>
+                            <th>Status</th>
+                            <th>Keputusan</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                        {% for izin in data_izin %}
+
+                        <tr>
+                            <td>{{ loop.index }}</td>
+
+                            <td>
+                                <strong>{{ izin.nama }}</strong><br>
+                                <small class="text-muted">
+                                    {{ izin.jabatan }}
+                                </small>
+                            </td>
+
+                            <td>{{ izin.jenis_izin }}</td>
+
+                            <td>{{ izin.tanggal_mulai }}</td>
+
+                            <td>{{ izin.tanggal_selesai }}</td>
+
+                            <td>{{ izin.alasan }}</td>
+
+                            <td>
+                                <a
+                                    href="{{ url_for('static', filename='uploads/izin/' ~ izin.file_bukti) }}"
+                                    target="_blank"
+                                    class="btn btn-sm btn-outline-primary"
+                                >
+                                    <i class="bi bi-file-earmark"></i>
+                                    Lihat Bukti
+                                </a>
+                            </td>
+
+                            <td>
+                                {% if izin.status == "Menunggu" %}
+                                    <span class="badge bg-warning text-dark">
+                                        Menunggu
+                                    </span>
+                                {% elif izin.status == "Disetujui" %}
+                                    <span class="badge bg-success">
+                                        Disetujui
+                                    </span>
+                                {% else %}
+                                    <span class="badge bg-danger">
+                                        Ditolak
+                                    </span>
+                                {% endif %}
+                            </td>
+
+                            <td>
+
+                                {% if izin.status == "Menunggu" %}
+
+                                <div class="d-flex gap-1">
+
+                                    <form
+                                        action="{{ url_for('keputusan_izin', id=izin.id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Setujui pengajuan izin ini?')"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="status"
+                                            value="Disetujui"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-success"
+                                        >
+                                            <i class="bi bi-check-circle"></i>
+                                            Setujui
+                                        </button>
+                                    </form>
+
+                                    <form
+                                        action="{{ url_for('keputusan_izin', id=izin.id) }}"
+                                        method="POST"
+                                        onsubmit="return confirm('Tolak pengajuan izin ini?')"
+                                    >
+                                        <input
+                                            type="hidden"
+                                            name="status"
+                                            value="Ditolak"
+                                        >
+
+                                        <button
+                                            type="submit"
+                                            class="btn btn-sm btn-danger"
+                                        >
+                                            <i class="bi bi-x-circle"></i>
+                                            Tolak
+                                        </button>
+                                    </form>
+
+                                </div>
+
+                                {% else %}
+
+                                    <span class="text-muted">
+                                        Sudah diproses
+                                    </span>
+
+                                {% endif %}
+
+                            </td>
+                        </tr>
+
+                        {% else %}
+
+                        <tr>
+                            <td colspan="9" class="text-center text-muted py-4">
+                                Belum ada pengajuan izin dari karyawan.
+                            </td>
+                        </tr>
+
+                        {% endfor %}
+
+                    </tbody>
+
+                </table>
+
+            </div>
+
+        </div>
+    </div>
+
+</div>
+
+{% endblock %}

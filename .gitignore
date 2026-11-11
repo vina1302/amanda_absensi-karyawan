@@ -1,0 +1,10 @@
+venv/
+venv311/
+.venv/
+env/
+__pycache__/
+*.pyc
+.env
+*.log
+instance/
+static/uploads/izin/

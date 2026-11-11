@@ -1,0 +1,70 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Pengaturan Absensi
+{% endblock %}
+
+{% block heading %}
+Pengaturan Absensi
+{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+
+        <div>
+
+            <h5>
+                Pengaturan Jam Masuk
+            </h5>
+
+            <p>
+                Tentukan batas waktu masuk karyawan
+            </p>
+
+        </div>
+
+        <i class="bi bi-clock"></i>
+
+    </div>
+
+
+    <form method="POST">
+
+        <div class="mb-4">
+
+            <label class="form-label">
+                Jam Masuk
+            </label>
+
+            <input
+                type="time"
+                name="jam_masuk"
+                class="form-control"
+                value="{{ data.jam_masuk }}"
+                required>
+
+            <small class="text-muted">
+                Karyawan yang melakukan absensi setelah
+                jam ini akan dianggap terlambat.
+            </small>
+
+        </div>
+
+
+        <button
+            type="submit"
+            class="btn btn-primary">
+
+            <i class="bi bi-save"></i>
+            Simpan Pengaturan
+
+        </button>
+
+    </form>
+
+</div>
+
+{% endblock %}

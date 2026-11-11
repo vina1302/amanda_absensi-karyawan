@@ -1,0 +1,126 @@
+{% extends "layout.html" %}
+
+{% block title %}Edit Karyawan - SI Absensi{% endblock %}
+
+{% block heading %}Edit Karyawan{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+        <div>
+            <h5>Edit Data Karyawan</h5>
+            <p>Ubah informasi data karyawan</p>
+        </div>
+    </div>
+
+    <form method="POST">
+
+        <div class="row g-3">
+
+            <!-- NAMA -->
+            <div class="col-md-6">
+                <label class="form-label">
+                    Nama Karyawan
+                </label>
+
+                <input
+                    type="text"
+                    name="nama"
+                    class="form-control"
+                    value="{{ karyawan.nama }}"
+                    required
+                >
+            </div>
+
+
+            <!-- NIK -->
+            <div class="col-md-6">
+                <label class="form-label">
+                    NIK
+                </label>
+
+                <input
+                    type="text"
+                    name="nik"
+                    class="form-control"
+                    value="{{ karyawan.nik }}"
+                    required
+                >
+            </div>
+
+
+            <!-- JABATAN -->
+            <div class="col-md-6">
+                <label class="form-label">
+                    Jabatan
+                </label>
+
+                <input
+                    type="text"
+                    name="jabatan"
+                    class="form-control"
+                    value="{{ karyawan.jabatan }}"
+                    required
+                >
+            </div>
+
+
+            <!-- NO HP -->
+            <div class="col-md-6">
+                <label class="form-label">
+                    No. HP
+                </label>
+
+                <input
+                    type="text"
+                    name="no_hp"
+                    class="form-control"
+                    value="{{ karyawan.no_hp }}"
+                >
+            </div>
+
+
+            <!-- ALAMAT -->
+            <div class="col-12">
+                <label class="form-label">
+                    Alamat
+                </label>
+
+                <textarea
+                    name="alamat"
+                    class="form-control"
+                    rows="4"
+                >{{ karyawan.alamat }}</textarea>
+            </div>
+
+        </div>
+
+
+        <!-- BUTTON -->
+        <div class="mt-4">
+
+            <button
+                type="submit"
+                class="btn btn-primary"
+            >
+                <i class="bi bi-save"></i>
+                Simpan Perubahan
+            </button>
+
+            <a
+                href="{{ url_for('karyawan') }}"
+                class="btn btn-secondary"
+            >
+                <i class="bi bi-arrow-left"></i>
+                Kembali
+            </a>
+
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

@@ -1,0 +1,263 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Daftar Wajah - SI Absensi
+{% endblock %}
+
+{% block heading %}
+Daftar Wajah Karyawan
+{% endblock %}
+
+{% block content %}
+
+<div class="card-box">
+
+    <div class="card-header-custom">
+
+        <div>
+            <h5>Daftar Wajah</h5>
+
+            <p>
+                Pendaftaran wajah untuk
+                <strong>{{ karyawan.nama }}</strong>
+            </p>
+        </div>
+
+        <a
+            href="{{ url_for('karyawan') }}"
+            class="btn btn-secondary"
+        >
+
+            <i class="bi bi-arrow-left"></i>
+            Kembali
+
+        </a>
+
+    </div>
+
+
+    <div class="text-center">
+
+        <div class="camera-container">
+
+            <video
+                id="camera"
+                autoplay
+                playsinline
+                muted
+            ></video>
+
+            <canvas
+                id="canvas"
+                style="display:none;"
+            ></canvas>
+
+        </div>
+
+
+        <p
+            id="camera-status"
+            class="text-muted mt-3"
+        >
+
+            <i class="bi bi-camera"></i>
+            Mengaktifkan kamera...
+
+        </p>
+
+
+        <form
+            method="POST"
+            id="face-form"
+        >
+
+            <input
+                type="hidden"
+                name="foto"
+                id="foto"
+            >
+
+
+            <button
+                type="submit"
+                id="capture-button"
+                class="btn btn-primary"
+                disabled
+            >
+
+                <i class="bi bi-camera-fill"></i>
+
+                Daftarkan Wajah
+
+            </button>
+
+        </form>
+
+    </div>
+
+</div>
+
+
+<style>
+
+.camera-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 20px auto;
+    overflow: hidden;
+    border-radius: 16px;
+    background: #111;
+}
+
+.camera-container video {
+    width: 100%;
+    display: block;
+    transform: scaleX(-1);
+}
+
+</style>
+
+
+<script>
+
+const video = document.getElementById("camera");
+const canvas = document.getElementById("canvas");
+const form = document.getElementById("face-form");
+const foto = document.getElementById("foto");
+const button = document.getElementById("capture-button");
+const statusCamera = document.getElementById("camera-status");
+
+let stream = null;
+
+
+async function startCamera() {
+
+    try {
+
+        stream =
+            await navigator.mediaDevices.getUserMedia({
+
+                video: {
+                    facingMode: "user",
+                    width: {
+                        ideal: 640
+                    },
+                    height: {
+                        ideal: 480
+                    }
+                },
+
+                audio: false
+
+            });
+
+
+        video.srcObject = stream;
+
+        statusCamera.innerHTML =
+            '<i class="bi bi-check-circle-fill"></i> Kamera siap digunakan';
+
+        button.disabled = false;
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        statusCamera.innerHTML =
+            '<i class="bi bi-exclamation-triangle-fill"></i> Kamera tidak dapat digunakan';
+
+        button.disabled = true;
+
+        alert(
+            "Kamera tidak dapat diakses. Izinkan akses kamera pada browser."
+        );
+
+    }
+
+}
+
+
+form.addEventListener(
+    "submit",
+    function(event) {
+
+        event.preventDefault();
+
+
+        if (
+            !video.videoWidth ||
+            !video.videoHeight
+        ) {
+
+            alert(
+                "Kamera belum siap."
+            );
+
+            return;
+
+        }
+
+
+        canvas.width =
+            video.videoWidth;
+
+        canvas.height =
+            video.videoHeight;
+
+
+        const context =
+            canvas.getContext("2d");
+
+
+        context.drawImage(
+            video,
+            0,
+            0,
+            canvas.width,
+            canvas.height
+        );
+
+
+        foto.value =
+            canvas.toDataURL(
+                "image/jpeg",
+                0.90
+            );
+
+
+        button.disabled = true;
+
+        button.innerHTML =
+            '<span class="spinner-border spinner-border-sm me-2"></span>' +
+            'Mendaftarkan wajah...';
+
+
+        form.submit();
+
+    }
+);
+
+
+startCamera();
+
+
+window.addEventListener(
+    "beforeunload",
+    function() {
+
+        if (stream) {
+
+            stream.getTracks().forEach(
+                track => track.stop()
+            );
+
+        }
+
+    }
+);
+
+</script>
+
+{% endblock %}

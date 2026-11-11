@@ -1,0 +1,157 @@
+{% extends "layout.html" %}
+
+{% block title %}
+Dashboard - SI Absensi
+{% endblock %}
+
+{% block heading %}
+Dashboard
+{% endblock %}
+
+{% block content %}
+
+<!-- ================= WELCOME ================= -->
+
+<div class="welcome">
+
+    <div>
+
+        <small>
+            SISTEM ABSENSI
+        </small>
+
+        <h2>
+            Halo, {{ session["nama"] }} 👋
+        </h2>
+
+        <p>
+            Pantau kehadiran karyawan dengan
+            mudah dan cepat.
+        </p>
+
+    </div>
+
+    <i class="bi bi-fingerprint"></i>
+
+</div>
+
+
+<!-- ================= STATISTIK ================= -->
+
+<div class="row g-4 mt-1">
+
+
+    <!-- Total Karyawan -->
+    <div class="col-md-3">
+
+        <div class="stat-card">
+
+            <div class="stat-icon blue">
+
+                <i class="bi bi-people"></i>
+
+            </div>
+
+            <div>
+
+                <small>
+                    Total Karyawan
+                </small>
+
+                <h3>
+                    {{ total_karyawan }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Hadir -->
+    <div class="col-md-3">
+
+        <div class="stat-card">
+
+            <div class="stat-icon green">
+
+                <i class="bi bi-person-check"></i>
+
+            </div>
+
+            <div>
+
+                <small>
+                    Hadir Hari Ini
+                </small>
+
+                <h3>
+                    {{ hadir }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Terlambat -->
+    <div class="col-md-3">
+
+        <div class="stat-card">
+
+            <div class="stat-icon orange">
+
+                <i class="bi bi-clock"></i>
+
+            </div>
+
+            <div>
+
+                <small>
+                    Terlambat
+                </small>
+
+                <h3>
+                    {{ terlambat }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- Izin -->
+    <div class="col-md-3">
+
+        <div class="stat-card">
+
+            <div class="stat-icon red">
+
+                <i class="bi bi-info-circle"></i>
+
+            </div>
+
+            <div>
+
+                <small>
+                    Izin
+                </small>
+
+                <h3>
+                    {{ izin }}
+                </h3>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}
